@@ -10,6 +10,8 @@ services:
         value: false
       - key: APP_KEY
         sync: false
+      - key: APP_URL
+        value: https://innovation-tracker.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DATABASE_URL
