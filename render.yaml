@@ -1,7 +1,7 @@
 services:
   - type: web
     name: innovation-tracker
-    runtime: docker
+    runtime: php
     plan: free
     buildCommand: |
       composer install --optimize-autoloader --no-dev
