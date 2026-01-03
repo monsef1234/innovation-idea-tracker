@@ -1,59 +1,266 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vote App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern web application for submitting ideas, voting, and providing feedback, built with Laravel and Vue.js.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. [User Guide](#user-guide)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    - [Getting Started](#getting-started)
+    - [Submitting Ideas](#submitting-ideas)
+    - [Voting](#voting)
+    - [Providing Feedback](#providing-feedback)
+    - [User Account](#user-account)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. [Technical Documentation](#technical-documentation)
+    - [System Requirements](#system-requirements)
+    - [Installation](#installation)
+    - [Project Structure](#project-structure)
+    - [Environment Configuration](#environment-configuration)
+    - [Development Workflow](#development-workflow)
+    - [Testing](#testing)
+    - [Deployment](#deployment)
 
-## Learning Laravel
+## User Guide
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Getting Started
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Create an Account**
 
-## Laravel Sponsors
+    - Click on "Sign Up" and fill in your details
+    - Verify your email address
+    - Log in with your credentials
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Dashboard**
+    - View all active ideas
+    - See top-voted ideas
+    - Check your activity feed
 
-### Premium Partners
+### Submitting Ideas
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Click on "Submit Idea" in the navigation bar
+2. Fill in the following details:
+    - Title (brief description of your idea)
+    - Detailed description
+    - Category (select from available options)
+    - Any relevant tags
+3. Click "Submit" to post your idea
 
-## Contributing
+### Voting
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Browse through the list of ideas
+2. For each idea, you can:
+    - Upvote (thumbs up) ideas you support
+    - Downvote (thumbs down) ideas you don't support
+    - View the number of votes each idea has received
 
-## Code of Conduct
+### Providing Feedback
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Navigate to any idea's detail page
+2. Scroll to the comments section
+3. Type your feedback in the text box
+4. Click "Post Comment" to submit
 
-## Security Vulnerabilities
+### User Account
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   **Profile**: View and edit your profile information
+-   **My Ideas**: See all ideas you've submitted
+-   **Votes**: Track ideas you've voted on
+-   **Notifications**: Get updates on your ideas and comments
+
+## Technical Documentation
+
+### System Requirements
+
+-   PHP 8.1 or higher
+-   Composer
+-   Node.js 16+ and NPM
+-   MySQL 5.7+ or MariaDB 10.3+
+-   Web server (Apache/Nginx)
+-   Redis (for caching and queues)
+
+### Installation
+
+1. **Clone the repository**
+
+    ```bash
+    git clone [repository-url]
+    cd vote-app
+    ```
+
+2. **Install PHP dependencies**
+
+    ```bash
+    composer install
+    ```
+
+3. **Install JavaScript dependencies**
+
+    ```bash
+    npm install
+    ```
+
+4. **Environment setup**
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+5. **Configure database**
+
+    - Update `.env` with your database credentials
+    - Run migrations and seeders:
+        ```bash
+        php artisan migrate --seed
+        ```
+
+6. **Compile assets**
+
+    ```bash
+    npm run build
+    ```
+
+7. **Start the development server**
+    ```bash
+    php artisan serve
+    ```
+
+### Project Structure
+
+```
+vote-app/
+├── app/                  # Application code
+│   ├── Http/            # Controllers and middleware
+│   ├── Models/           # Eloquent models
+│   └── ...
+├── config/               # Configuration files
+├── database/             # Migrations and seeders
+├── public/               # Publicly accessible files
+├── resources/
+│   ├── js/               # Vue.js components
+│   └── views/            # Blade templates
+├── routes/               # Application routes
+└── tests/                # Test files
+```
+
+### Environment Configuration
+
+Key environment variables in `.env`:
+
+```
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=vote_app
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailhog
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### Development Workflow
+
+1. **Starting the development environment**
+
+    ```bash
+    # Start Laravel development server
+    php artisan serve
+
+    # Start Vite for frontend assets
+    npm run dev
+    ```
+
+2. **Running tests**
+
+    ```bash
+    # Run PHPUnit tests
+    php artisan test
+
+    # Run JavaScript tests
+    npm test
+    ```
+
+3. **Code style**
+
+    ```bash
+    # PHP code style fixer
+    composer fix
+
+    # JavaScript code style
+    npm run lint
+    ```
+
+### Testing
+
+1. **PHP Tests**
+
+    - Unit tests in `tests/Unit`
+    - Feature tests in `tests/Feature`
+    - Run all tests: `php artisan test`
+
+2. **Browser Tests**
+    - Uses Laravel Dusk
+    - Configure `.env.dusk.local` for testing environment
+    - Run tests: `php artisan dusk`
+
+### Deployment
+
+1. **Production requirements**
+
+    - PHP 8.1+
+    - Composer
+    - Node.js 16+ and NPM
+    - Database server
+    - Queue worker (Supervisor recommended)
+
+2. **Deployment steps**
+
+    ```bash
+    # Install dependencies
+    composer install --optimize-autoloader --no-dev
+    npm install --production
+
+    # Optimize application
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
+    # Compile assets
+    npm run build
+
+    # Run migrations
+    php artisan migrate --force
+    ```
+
+3. **Queue Workers**
+   Set up Supervisor to keep the queue worker running:
+    ```ini
+    [program:vote-app-worker]
+    process_name=%(program_name)s_%(process_num)02d
+    command=php /path/to/vote-app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    autostart=true
+    autorestart=true
+    stopasgroup=true
+    killasgroup=true
+    user=www-data
+    numprocs=8
+    redirect_stderr=true
+    stdout_logfile=/path/to/vote-app/worker.log
+    stopwaitsecs=3600
+    ```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
