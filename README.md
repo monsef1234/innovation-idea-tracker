@@ -1,4 +1,4 @@
-# Vote App
+# Innovation Idea Tracker
 
 A modern web application for submitting ideas, voting, and providing feedback, built with Laravel and Vue.js.
 
@@ -7,10 +7,11 @@ A modern web application for submitting ideas, voting, and providing feedback, b
 1. [User Guide](#user-guide)
 
     - [Getting Started](#getting-started)
+    - [User Roles](#user-roles)
     - [Submitting Ideas](#submitting-ideas)
     - [Voting](#voting)
     - [Providing Feedback](#providing-feedback)
-    - [User Account](#user-account)
+    - [Website Feedback](#website-feedback)
 
 2. [Technical Documentation](#technical-documentation)
     - [System Requirements](#system-requirements)
@@ -28,56 +29,72 @@ A modern web application for submitting ideas, voting, and providing feedback, b
 1. **Create an Account**
 
     - Click on "Sign Up" and fill in your details
-    - Verify your email address
+    - **Select your role** during signup:
+        - **Submitter**: Can submit ideas and comment
+        - **Reviewer**: Can submit ideas, vote, and comment
     - Log in with your credentials
 
-2. **Dashboard**
-    - View all active ideas
-    - See top-voted ideas
-    - Check your activity feed
+2. **Default Admin Account**
+    - Email: `admin@example.com`
+    - Password: `password`
+    - Admins have full access to all features
+
+### User Roles
+
+The application has three user roles with different permissions:
+
+| Feature                | Submitter | Reviewer | Admin |
+| ---------------------- | --------- | -------- | ----- |
+| Submit Ideas           | ✅        | ✅       | ✅    |
+| Comment on Ideas       | ✅        | ✅       | ✅    |
+| Vote (Upvote/Downvote) | ❌        | ✅       | ✅    |
+| View Feedbacks         | ❌        | ❌       | ✅    |
+| Manage All Content     | ❌        | ❌       | ✅    |
 
 ### Submitting Ideas
 
 1. Click on "Submit Idea" in the navigation bar
 2. Fill in the following details:
-    - Title (brief description of your idea)
-    - Detailed description
-    - Category (select from available options)
-    - Any relevant tags
+    - **Title**: Brief description of your idea
+    - **Detailed description**: Explain your idea in detail
+    - **Category**: Select from available options
 3. Click "Submit" to post your idea
 
 ### Voting
 
-1. Browse through the list of ideas
+> **Note**: Only users with the **Reviewer** or **Admin** role can vote.
+
+1. Browse through the list of ideas on the home page
 2. For each idea, you can:
-    - Upvote (thumbs up) ideas you support
-    - Downvote (thumbs down) ideas you don't support
-    - View the number of votes each idea has received
+    - **Upvote** (👍 Vote button) ideas you support
+    - **Downvote** (👎 button) ideas you don't support
+    - View the **vote count** displayed between the buttons
+3. Your active votes are highlighted in green (upvote) or red (downvote)
+4. Click the same vote button again to remove your vote
 
 ### Providing Feedback
 
-1. Navigate to any idea's detail page
-2. Scroll to the comments section
-3. Type your feedback in the text box
-4. Click "Post Comment" to submit
+**Coming Soon**: Comment functionality will be available in a future update.
 
-### User Account
+### Website Feedback
 
--   **Profile**: View and edit your profile information
--   **My Ideas**: See all ideas you've submitted
--   **Votes**: Track ideas you've voted on
--   **Notifications**: Get updates on your ideas and comments
+You can provide feedback about the website itself:
+
+1. Look for the **feedback button** in the **bottom right corner** of any page
+2. Click it to open the feedback form
+3. Submit your suggestions or report issues
+4. **Admins** can view all submitted feedback through the admin panel
 
 ## Technical Documentation
 
 ### System Requirements
 
 -   PHP 8.1 or higher
--   Composer
+-   Composer 2.x
 -   Node.js 16+ and NPM
 -   MySQL 5.7+ or MariaDB 10.3+
 -   Web server (Apache/Nginx)
--   Redis (for caching and queues)
+-   Redis (optional, for caching and queues)
 
 ### Installation
 
@@ -109,7 +126,15 @@ A modern web application for submitting ideas, voting, and providing feedback, b
 
 5. **Configure database**
 
-    - Update `.env` with your database credentials
+    - Update `.env` with your database credentials:
+        ```env
+        DB_CONNECTION=mysql
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_DATABASE=vote_app
+        DB_USERNAME=root
+        DB_PASSWORD=
+        ```
     - Run migrations and seeders:
         ```bash
         php artisan migrate --seed
@@ -118,13 +143,20 @@ A modern web application for submitting ideas, voting, and providing feedback, b
 6. **Compile assets**
 
     ```bash
+    # For development
+    npm run dev
+
+    # For production
     npm run build
     ```
 
 7. **Start the development server**
+
     ```bash
     php artisan serve
     ```
+
+    Access the application at `http://localhost:8000`
 
 ### Project Structure
 
@@ -132,23 +164,50 @@ A modern web application for submitting ideas, voting, and providing feedback, b
 vote-app/
 ├── app/                  # Application code
 │   ├── Http/            # Controllers and middleware
-│   ├── Models/           # Eloquent models
+│   │   ├── Controllers/ # Request handlers
+│   │   └── Middleware/  # HTTP middleware
+│   ├── Models/          # Eloquent models
+│   │   ├── User.php
+│   │   ├── Idea.php
+│   │   ├── Vote.php
+│   │   └── Feedback.php
 │   └── ...
-├── config/               # Configuration files
-├── database/             # Migrations and seeders
-├── public/               # Publicly accessible files
+├── config/              # Configuration files
+├── database/            # Migrations and seeders
+│   ├── migrations/      # Database schema
+│   └── seeders/         # Seed data
+├── public/              # Publicly accessible files
 ├── resources/
-│   ├── js/               # Vue.js components
-│   └── views/            # Blade templates
-├── routes/               # Application routes
-└── tests/                # Test files
+│   ├── js/              # Vue.js components
+│   │   ├── Pages/       # Inertia.js pages
+│   │   ├── Layouts/     # Layout components
+│   │   └── Components/  # Reusable components
+│   └── views/           # Blade templates
+├── routes/              # Application routes
+│   ├── web.php         # Web routes
+│   └── api.php         # API routes
+├── package.json         # NPM dependencies
+├── composer.json        # PHP dependencies
+├── vite.config.js      # Vite configuration
+└── tailwind.config.js  # Tailwind CSS configuration
 ```
+
+### Technology Stack
+
+-   **Backend**: Laravel 10+ (PHP Framework)
+-   **Frontend**: Vue.js 3 with TypeScript
+-   **Routing**: Inertia.js (SPA without API)
+-   **Styling**: Tailwind CSS + DaisyUI
+-   **Build Tool**: Vite
+-   **Database**: MySQL/MariaDB
+-   **ORM**: Eloquent
 
 ### Environment Configuration
 
 Key environment variables in `.env`:
 
-```
+```env
+APP_NAME="Innovation Idea Tracker"
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
@@ -168,99 +227,79 @@ MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
+
+# Session & Cache
+SESSION_DRIVER=file
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
 ```
 
-### Development Workflow
+## Features Overview
 
-1. **Starting the development environment**
+### Current Features
 
-    ```bash
-    # Start Laravel development server
-    php artisan serve
+-   ✅ User registration and authentication with role selection
+-   ✅ Three-tier role system (Admin, Reviewer, Submitter)
+-   ✅ Idea submission with title, description, and category
+-   ✅ Voting system (upvote/downvote) for Reviewers and Admins
+-   ✅ Real-time vote count display
+-   ✅ Infinite scroll for idea listings
+-   ✅ Website feedback submission
+-   ✅ Admin dashboard for viewing feedbacks
+-   ✅ Flash messages for user actions
+-   ✅ Responsive design with DaisyUI
 
-    # Start Vite for frontend assets
-    npm run dev
-    ```
+### Planned Features
 
-2. **Running tests**
+-   🔜 Comment system on ideas
+-   🔜 Idea status management (pending, approved, implemented)
+-   🔜 User notifications
+-   🔜 Search and filter ideas
+-   🔜 Tagging system
+-   🔜 User profile pages
+-   🔜 Activity history
 
-    ```bash
-    # Run PHPUnit tests
-    php artisan test
+## Troubleshooting
 
-    # Run JavaScript tests
-    npm test
-    ```
+### Common Issues
 
-3. **Code style**
+1. **"Target class [Controller] does not exist"**
 
-    ```bash
-    # PHP code style fixer
-    composer fix
+    - Run: `composer dump-autoload`
 
-    # JavaScript code style
-    npm run lint
-    ```
+2. **Vite manifest not found**
 
-### Testing
+    - Run: `npm run build` or ensure `npm run dev` is running
 
-1. **PHP Tests**
-
-    - Unit tests in `tests/Unit`
-    - Feature tests in `tests/Feature`
-    - Run all tests: `php artisan test`
-
-2. **Browser Tests**
-    - Uses Laravel Dusk
-    - Configure `.env.dusk.local` for testing environment
-    - Run tests: `php artisan dusk`
-
-### Deployment
-
-1. **Production requirements**
-
-    - PHP 8.1+
-    - Composer
-    - Node.js 16+ and NPM
-    - Database server
-    - Queue worker (Supervisor recommended)
-
-2. **Deployment steps**
+3. **Permission denied errors**
 
     ```bash
-    # Install dependencies
-    composer install --optimize-autoloader --no-dev
-    npm install --production
-
-    # Optimize application
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-
-    # Compile assets
-    npm run build
-
-    # Run migrations
-    php artisan migrate --force
+    chmod -R 775 storage bootstrap/cache
+    chown -R www-data:www-data storage bootstrap/cache
     ```
 
-3. **Queue Workers**
-   Set up Supervisor to keep the queue worker running:
-    ```ini
-    [program:vote-app-worker]
-    process_name=%(program_name)s_%(process_num)02d
-    command=php /path/to/vote-app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    autostart=true
-    autorestart=true
-    stopasgroup=true
-    killasgroup=true
-    user=www-data
-    numprocs=8
-    redirect_stderr=true
-    stdout_logfile=/path/to/vote-app/worker.log
-    stopwaitsecs=3600
-    ```
+4. **Database connection refused**
+    - Check if MySQL is running: `sudo service mysql status`
+    - Verify `.env` database credentials
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
 This project is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Support
+
+For issues and questions:
+
+-   Open an issue on GitHub
+-   Use the website feedback feature
+-   Contact the admin at admin@example.com
