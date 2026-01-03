@@ -72,9 +72,14 @@ The application has three user roles with different permissions:
 3. Your active votes are highlighted in green (upvote) or red (downvote)
 4. Click the same vote button again to remove your vote
 
-### Providing Feedback
+### Comment on Ideas
 
-**Coming Soon**: Comment functionality will be available in a future update.
+1. Navigate to any idea by clicking on the "💬 Comments" button
+2. View existing comments in a threaded format
+3. Type your comment in the text box at the bottom
+4. Click "Post Comment" to submit your feedback
+5. **Reply to comments**: Click "Reply" on any comment to create a threaded response
+6. All users (Submitter, Reviewer, and Admin) can comment on ideas
 
 ### Website Feedback
 
@@ -186,6 +191,9 @@ vote-app/
 ├── routes/              # Application routes
 │   ├── web.php         # Web routes
 │   └── api.php         # API routes
+├── tests/               # Test files
+│   ├── Feature/        # Feature tests
+│   └── Unit/           # Unit tests
 ├── package.json         # NPM dependencies
 ├── composer.json        # PHP dependencies
 ├── vite.config.js      # Vite configuration
@@ -234,6 +242,220 @@ CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 ```
 
+### Development Workflow
+
+1. **Starting the development environment**
+
+    ```bash
+    # Terminal 1: Start Laravel development server
+    php artisan serve
+
+    # Terminal 2: Start Vite for hot module replacement
+    npm run dev
+    ```
+
+2. **Database management**
+
+    ```bash
+    # Create a new migration
+    php artisan make:migration create_table_name
+
+    # Run migrations
+    php artisan migrate
+
+    # Rollback migrations
+    php artisan migrate:rollback
+
+    # Seed database
+    php artisan db:seed
+
+    # Fresh migration with seed
+    php artisan migrate:fresh --seed
+    ```
+
+3. **Creating components**
+
+    ```bash
+    # Create a new controller
+    php artisan make:controller IdeaController
+
+    # Create a new model with migration
+    php artisan make:model Idea -m
+
+    # Create a new Vue component in resources/js/Components/
+    ```
+
+4. **Running tests**
+
+    ```bash
+    # Run all PHPUnit tests
+    php artisan test
+
+    # Run specific test file
+    php artisan test tests/Feature/IdeaTest.php
+
+    # Run with coverage
+    php artisan test --coverage
+    ```
+
+5. **Code style**
+
+    ```bash
+    # PHP code style (if configured)
+    ./vendor/bin/pint
+
+    # JavaScript/Vue linting
+    npm run lint
+
+    # Type checking
+    npm run type-check
+    ```
+
+### Testing
+
+1. **PHP Tests**
+
+    - Unit tests in `tests/Unit/`
+    - Feature tests in `tests/Feature/`
+    - Run all tests: `php artisan test`
+    - Example test structure:
+        ```php
+        public function test_user_can_vote_on_idea()
+        {
+            $user = User::factory()->create(['role' => 'reviewer']);
+            $idea = Idea::factory()->create();
+
+            $response = $this->actingAs($user)
+                ->post("/ideas/{$idea->id}/vote", [
+                    'vote_type' => 'up'
+                ]);
+
+            $response->assertRedirect();
+            $this->assertDatabaseHas('votes', [
+                'user_id' => $user->id,
+                'idea_id' => $idea->id,
+                'vote_type' => 'up'
+            ]);
+        }
+        ```
+
+2. **Browser Tests** (Optional)
+    - Uses Laravel Dusk
+    - Configure `.env.dusk.local` for testing environment
+    - Run tests: `php artisan dusk`
+
+### Deployment
+
+1. **Production requirements**
+
+    - PHP 8.1+ with required extensions
+    - Composer 2.x
+    - Node.js 16+ and NPM
+    - MySQL/MariaDB database server
+    - Queue worker (Supervisor recommended)
+    - HTTPS certificate (Let's Encrypt recommended)
+
+2. **Deployment steps**
+
+    ```bash
+    # Pull latest code
+    git pull origin main
+
+    # Install dependencies
+    composer install --optimize-autoloader --no-dev
+    npm install --production
+
+    # Run migrations
+    php artisan migrate --force
+
+    # Clear and cache configuration
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
+    # Compile assets for production
+    npm run build
+
+    # Set proper permissions
+    chmod -R 755 storage bootstrap/cache
+    chown -R www-data:www-data storage bootstrap/cache
+    ```
+
+3. **Web server configuration**
+
+    **Nginx example:**
+
+    ```nginx
+    server {
+        listen 80;
+        server_name example.com;
+        root /var/www/vote-app/public;
+
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-Content-Type-Options "nosniff";
+
+        index index.php;
+
+        charset utf-8;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        error_page 404 /index.php;
+
+        location ~ \.php$ {
+            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        location ~ /\.(?!well-known).* {
+            deny all;
+        }
+    }
+    ```
+
+4. **Queue Workers** (if using queues)
+
+    Set up Supervisor to keep the queue worker running:
+
+    ```ini
+    [program:vote-app-worker]
+    process_name=%(program_name)s_%(process_num)02d
+    command=php /var/www/vote-app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    autostart=true
+    autorestart=true
+    stopasgroup=true
+    killasgroup=true
+    user=www-data
+    numprocs=8
+    redirect_stderr=true
+    stdout_logfile=/var/www/vote-app/storage/logs/worker.log
+    stopwaitsecs=3600
+    ```
+
+5. **Environment variables for production**
+
+    ```env
+    APP_ENV=production
+    APP_DEBUG=false
+    APP_URL=https://your-domain.com
+
+    # Use stronger session/cache drivers
+    SESSION_DRIVER=redis
+    CACHE_DRIVER=redis
+    QUEUE_CONNECTION=redis
+
+    # Configure Redis
+    REDIS_HOST=127.0.0.1
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
+    ```
+
 ## Features Overview
 
 ### Current Features
@@ -243,6 +465,7 @@ QUEUE_CONNECTION=sync
 -   ✅ Idea submission with title, description, and category
 -   ✅ Voting system (upvote/downvote) for Reviewers and Admins
 -   ✅ Real-time vote count display
+-   ✅ Threaded comment system on ideas
 -   ✅ Infinite scroll for idea listings
 -   ✅ Website feedback submission
 -   ✅ Admin dashboard for viewing feedbacks
@@ -251,7 +474,6 @@ QUEUE_CONNECTION=sync
 
 ### Planned Features
 
--   🔜 Comment system on ideas
 -   🔜 Idea status management (pending, approved, implemented)
 -   🔜 User notifications
 -   🔜 Search and filter ideas
