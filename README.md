@@ -19,7 +19,6 @@ A modern web application for submitting ideas, voting, and providing feedback, b
     - [Project Structure](#project-structure)
     - [Environment Configuration](#environment-configuration)
     - [Development Workflow](#development-workflow)
-    - [Testing](#testing)
     - [Deployment](#deployment)
 
 ## User Guide
@@ -191,9 +190,6 @@ vote-app/
 ├── routes/              # Application routes
 │   ├── web.php         # Web routes
 │   └── api.php         # API routes
-├── tests/               # Test files
-│   ├── Feature/        # Feature tests
-│   └── Unit/           # Unit tests
 ├── package.json         # NPM dependencies
 ├── composer.json        # PHP dependencies
 ├── vite.config.js      # Vite configuration
@@ -311,39 +307,6 @@ QUEUE_CONNECTION=sync
     npm run type-check
     ```
 
-### Testing
-
-1. **PHP Tests**
-
-    - Unit tests in `tests/Unit/`
-    - Feature tests in `tests/Feature/`
-    - Run all tests: `php artisan test`
-    - Example test structure:
-        ```php
-        public function test_user_can_vote_on_idea()
-        {
-            $user = User::factory()->create(['role' => 'reviewer']);
-            $idea = Idea::factory()->create();
-
-            $response = $this->actingAs($user)
-                ->post("/ideas/{$idea->id}/vote", [
-                    'vote_type' => 'up'
-                ]);
-
-            $response->assertRedirect();
-            $this->assertDatabaseHas('votes', [
-                'user_id' => $user->id,
-                'idea_id' => $idea->id,
-                'vote_type' => 'up'
-            ]);
-        }
-        ```
-
-2. **Browser Tests** (Optional)
-    - Uses Laravel Dusk
-    - Configure `.env.dusk.local` for testing environment
-    - Run tests: `php artisan dusk`
-
 ### Deployment
 
 1. **Production requirements**
@@ -381,64 +344,7 @@ QUEUE_CONNECTION=sync
     chown -R www-data:www-data storage bootstrap/cache
     ```
 
-3. **Web server configuration**
-
-    **Nginx example:**
-
-    ```nginx
-    server {
-        listen 80;
-        server_name example.com;
-        root /var/www/vote-app/public;
-
-        add_header X-Frame-Options "SAMEORIGIN";
-        add_header X-Content-Type-Options "nosniff";
-
-        index index.php;
-
-        charset utf-8;
-
-        location / {
-            try_files $uri $uri/ /index.php?$query_string;
-        }
-
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
-
-        error_page 404 /index.php;
-
-        location ~ \.php$ {
-            fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-            include fastcgi_params;
-        }
-
-        location ~ /\.(?!well-known).* {
-            deny all;
-        }
-    }
-    ```
-
-4. **Queue Workers** (if using queues)
-
-    Set up Supervisor to keep the queue worker running:
-
-    ```ini
-    [program:vote-app-worker]
-    process_name=%(program_name)s_%(process_num)02d
-    command=php /var/www/vote-app/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    autostart=true
-    autorestart=true
-    stopasgroup=true
-    killasgroup=true
-    user=www-data
-    numprocs=8
-    redirect_stderr=true
-    stdout_logfile=/var/www/vote-app/storage/logs/worker.log
-    stopwaitsecs=3600
-    ```
-
-5. **Environment variables for production**
+3. **Environment variables for production**
 
     ```env
     APP_ENV=production
@@ -471,15 +377,6 @@ QUEUE_CONNECTION=sync
 -   ✅ Admin dashboard for viewing feedbacks
 -   ✅ Flash messages for user actions
 -   ✅ Responsive design with DaisyUI
-
-### Planned Features
-
--   🔜 Idea status management (pending, approved, implemented)
--   🔜 User notifications
--   🔜 Search and filter ideas
--   🔜 Tagging system
--   🔜 User profile pages
--   🔜 Activity history
 
 ## Troubleshooting
 
