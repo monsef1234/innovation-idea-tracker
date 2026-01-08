@@ -18,9 +18,9 @@ class IdeaFactory extends Factory
     public function definition(): array
     {
         return [
-            "title" => fake()->sentence(6),
-            "description" => fake()->paragraph(3),
-            "category" => fake()->randomElement(["Category 1", "Category 2", "Category 3"]),
+            "title" => $this->faker->sentence(6),
+            "description" => $this->faker->paragraph(3),
+            "category" => $this->faker->randomElement(["Category 1", "Category 2", "Category 3"]),
             "submitter_id" => User::all()->random()->id,
         ];
     }

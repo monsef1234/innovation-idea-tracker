@@ -21,7 +21,7 @@ class VoteFactory extends Factory
         return [
             "idea_id" => Idea::all()->random()->id,
             "user_id" => User::where("role", "admin")->orWhere("role", "reviewer")->get()->random()->id,
-            "vote_type" => fake()->randomElement(["up", "down"]),
+            "vote_type" => $this->faker->randomElement(["up", "down"]),
         ];
     }
 }
