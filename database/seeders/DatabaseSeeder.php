@@ -2,44 +2,36 @@
 
 namespace Database\Seeders;
 
-use App\Models\Idea;
 use App\Models\User;
-use App\Models\Vote;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Test User',
+        User::create([
+            'name' => 'Admin',
             'email' => 'admin@example.com',
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'role' => 'admin',
+            'email_verified_at' => now(),
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
+        User::create([
+            'name' => 'Submitter',
             'email' => 'submitter@example.com',
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'role' => 'submitter',
+            'email_verified_at' => now(),
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
+        User::create([
+            'name' => 'Reviewer',
             'email' => 'reviewer@example.com',
-            'password' => 'password',
+            'password' => Hash::make('password'),
             'role' => 'reviewer',
+            'email_verified_at' => now(),
         ]);
-
-        Idea::factory()->count(10)->create();
-
-        Vote::factory()->count(10)->create();
     }
 }
